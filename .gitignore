@@ -1,0 +1,27 @@
+# Ignore system & build folders
+node_modules/
+bin/
+obj/
+.vs/
+.env
+appsettings.json
+*.user
+*.suo
+*.dbmdl
+*.log
+*.tmp
+
+# Build output
+dist/
+build/
+
+# OS/editor folders
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Output files
+*.csv
+*.pdf
+*.xlsx
