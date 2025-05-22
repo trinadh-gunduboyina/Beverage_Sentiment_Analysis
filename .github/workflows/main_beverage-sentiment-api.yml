@@ -1,6 +1,3 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
 name: Build and deploy ASP.Net Core app to Azure Web App - beverage-sentiment-api
 
 on:
@@ -13,10 +10,11 @@ jobs:
   build:
     runs-on: windows-latest
     permissions:
-      contents: read # Required for actions/checkout
+      contents: read
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v4
@@ -26,10 +24,10 @@ jobs:
       - name: Build with dotnet
         run: dotnet build ./Beverage_Customer_Sentiment_Analysis_API/CustomerSentimentAPI.csproj --configuration Release
 
-      - name: dotnet publish
+      - name: Publish with dotnet
         run: dotnet publish ./Beverage_Customer_Sentiment_Analysis_API/CustomerSentimentAPI.csproj -c Release -o ${{env.DOTNET_ROOT}}/myapp
 
-      - name: Upload artifact for deployment job
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: .net-app
@@ -46,12 +44,12 @@ jobs:
       contents: read
 
     steps:
-      - name: Download artifact from build job
+      - name: Download artifact
         uses: actions/download-artifact@v4
         with:
           name: .net-app
 
-      - name: Login to Azure
+      - name: Azure login
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_AA4FDC057AA344319A691A5885868127 }}
