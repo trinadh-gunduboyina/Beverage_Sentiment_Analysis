@@ -21,24 +21,34 @@
         [HttpPost("reviews")]
         public async Task<IActionResult> UploadReviews(IFormFile file)
         {
-            using var reader = new StreamReader(file.OpenReadStream());
-            var csvConfig = new CsvConfiguration(CultureInfo.InvariantCulture)
+            try
             {
-                HeaderValidated = null, // Ignore missing headers  
-                MissingFieldFound = null // Ignore missing fields  
-            };
+                if (file == null || file.Length == 0)
+                    return BadRequest("No file uploaded.");
 
-            using var csv = new CsvReader(reader, csvConfig);
+                using var reader = new StreamReader(file.OpenReadStream());
+                var csvConfig = new CsvConfiguration(CultureInfo.InvariantCulture)
+                {
+                    HeaderValidated = null,
+                    MissingFieldFound = null
+                };
 
-            var records = csv.GetRecords<Review>().ToList();
+                using var csv = new CsvReader(reader, csvConfig);
+                var records = csv.GetRecords<Review>().ToList();
 
-            foreach (var review in records)
-            {
-                review.Sentiment = await _sentimentService.AnalyzeSentimentAsync(review.Text);
+                foreach (var review in records)
+                {
+                    review.Sentiment = await _sentimentService.AnalyzeSentimentAsync(review.Text);
+                }
+
+                return Ok(records);
             }
-
-            return Ok(records);
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"💥 Error: {ex.Message}\n{ex.StackTrace}");
+            }
         }
+
     }
 
 }
